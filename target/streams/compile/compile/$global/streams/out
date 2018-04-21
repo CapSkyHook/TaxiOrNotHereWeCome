@@ -1,0 +1,42 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:2:8: object SparkSession is not a member of package org.apache.spark.sql[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark.sql.SparkSession[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:38:22: value textFile is not a member of Any[0m
+[0m[[0m[31merror[0m] [0m[0m    val y_t_rdd = sc.textFile(YELLOW_TAXI_DATA_PATH)[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:39:22: value textFile is not a member of Any[0m
+[0m[[0m[31merror[0m] [0m[0m    val g_t_rdd = sc.textFile(GREEN_TAXI_DATA_PATH)[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:40:23: value textFile is not a member of Any[0m
+[0m[[0m[31merror[0m] [0m[0m    val uber_rdd = sc.textFile(UBER_DATA_DATA_PATH)[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:57:23: not found: value header[0m
+[0m[[0m[31merror[0m] [0m[0m    val y_t_columns = header.split(",").toSeq[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:58:23: not found: value header[0m
+[0m[[0m[31merror[0m] [0m[0m    val g_t_columns = header.split(",").toSeq[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:59:24: not found: value header[0m
+[0m[[0m[31merror[0m] [0m[0m    val uber_columns = header.split(",").toSeq[0m
+[0m[[0m[31merror[0m] [0m[0m                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:77:15: not found: value start_locs[0m
+[0m[[0m[31merror[0m] [0m[0m    val loc = start_locs.union(list(y_t_start_locs, y_t_end_locs, g_t_start_locs, g_t_end_locs, uber_locs)).cache()[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:77:32: not found: value list[0m
+[0m[[0m[31merror[0m] [0m[0m    val loc = start_locs.union(list(y_t_start_locs, y_t_end_locs, g_t_start_locs, g_t_end_locs, uber_locs)).cache()[0m
+[0m[[0m[31merror[0m] [0m[0m                               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:90:5: not found: value hadoopfs[0m
+[0m[[0m[31merror[0m] [0m[0m    hadoopfs.exists(p) && hadoopfs.getFileStatus(p).isDirectory[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:90:27: not found: value hadoopfs[0m
+[0m[[0m[31merror[0m] [0m[0m    hadoopfs.exists(p) && hadoopfs.getFileStatus(p).isDirectory[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:94:17: not found: value SparkSession[0m
+[0m[[0m[31merror[0m] [0m[0m    val spark = SparkSession.builder.appName("Simple Application").getOrCreate()[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:99:29: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : java.io.File[0m
+[0m[[0m[31merror[0m] [0m[0m required: String[0m
+[0m[[0m[31merror[0m] [0m[0m    if (!(this.testDirExist(output_dir) && (sc.wholeTextFiles(output_dir).count > 0)))  {[0m
+[0m[[0m[31merror[0m] [0m[0m                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m13 errors found[0m

@@ -12,6 +12,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._ 
 import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
 import org.apache.spark.mllib.linalg.Vectors
+import java.io.File
 
 val path = "hdfs:///user/tra290/BDAD/finalProject/yellow-taxi-data/*.csv"
 val y_t_rdd = sc.textFile(path)
