@@ -82,3 +82,7 @@ val loc_in_NYC = loc_in_NYC.union(tmp_loc_in_NYC).cache()
 
 // Identify the clusters for the data
 val clusters = KMeans.train(loc_in_NYC, 25, 25)
+
+//save cluster centroids
+val centroids = clusters.clusterCenters
+centroids.saveAsTextFile("hdfs:///user/tra290/BDAD/finalProject/Clusters")
