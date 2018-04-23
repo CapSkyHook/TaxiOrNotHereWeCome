@@ -1,3 +1,4 @@
+
 // group all location data and its count and save it in a dir 
 
 // import org.apache.spark.sql.SQLContext
