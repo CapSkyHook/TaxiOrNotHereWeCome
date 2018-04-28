@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:80:24: illegal start of simple expression[0m
-[0m[[0m[31merror[0m] [0m[0m    val loc = sc.union([y_t_start_locs, y_t_end_locs, g_t_start_locs, g_t_end_locs, uber_locs]).cache()[0m
-[0m[[0m[31merror[0m] [0m[0m                       ^[0m
-[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:85:3: ')' expected but '}' found.[0m
-[0m[[0m[31merror[0m] [0m[0m  }[0m
-[0m[[0m[31merror[0m] [0m[0m  ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:104:15: value saveAsTextFile is not a member of Array[org.apache.spark.mllib.linalg.Vector][0m
+[0m[[0m[31merror[0m] [0m[0m    centroids.saveAsTextFile(CLUSTER_DIR_FILE_PATH)[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -110,10 +110,14 @@ object TaxiProject {
   }
 
   def performKMeansClustering(sc: org.apache.spark.SparkContext): Unit = {
-    val loc_in_NYC = sc.textFile(OUTPUT_DIR_FILE_PATH)
-    val clusters = KMeans.train(loc_in_NYC, 25, 25)
+    val loc_in_NYC = sc.textFile(OUTPUT_DIR_FILE_PATH).cache()
+    val dense_loc_in_nyc = loc_in_NYC.map { line => 
+      val splitLine = line.drop(1).dropRight(1).split(",")
+      Vectors.dense(splitLine(0).toDouble, splitLine(1).toDouble)
+    }.cache()
+    val clusters = KMeans.train(dense_loc_in_nyc, 25, 25)
     val centroids = clusters.clusterCenters
-    centroids.saveAsTextFile(CLUSTER_DIR_FILE_PATH)
+    sc.parallelize(centroids).saveAsTextFile(CLUSTER_DIR_FILE_PATH)
   }
 
   def main(args: Array[String]) {
