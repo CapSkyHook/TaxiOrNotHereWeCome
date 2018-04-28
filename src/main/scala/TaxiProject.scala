@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
 
 // import org.apache.spark.SparkContext
 // import org.apache.spark.SparkContext._ 
