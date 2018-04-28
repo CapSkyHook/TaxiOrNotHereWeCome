@@ -36,6 +36,7 @@ object TaxiProject {
   val UBER_DATA_DATA_PATH = "hdfs:///user/tra290/BDAD/finalProject/uber-data/*.csv"
   val CITIBIKE_DATA_PATH = "hdfs:///user/tra290/BDAD/Citibike_data/*"
   val OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/to_clustering_tmp/"
+  val CLUSTER_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/Clusters_tmp"
 
   def preprocessDataAndSaveToDataframe(sc: org.apache.spark.SparkContext): Unit = {
     val y_t_rdd = sc.textFile(YELLOW_TAXI_DATA_PATH)
@@ -94,6 +95,13 @@ object TaxiProject {
     hadoopfs.exists(p) && hadoopfs.getFileStatus(p).isDirectory
   }
 
+  def performKMeansClustering(sc: org.apache.spark.SparkContext): Unit = {
+    val loc_in_NYC = sc.textFile(OUTPUT_DIR_FILE_PATH)
+    val clusters = KMeans.train(loc_in_NYC, 25, 25)
+    val centroids = clusters.clusterCenters
+    centroids.saveAsTextFile(CLUSTER_DIR_FILE_PATH)
+  }
+
   def main(args: Array[String]) {
     val spark = SparkSession.builder.appName("Simple Application").getOrCreate()
     val sparkContext = spark.sparkContext
@@ -103,9 +111,13 @@ object TaxiProject {
     } else {
       println("Data Already Created!")
     }
+    if (!(this.testDirExist(CLUSTER_DIR_FILE_PATH, spark) && (sparkContext.wholeTextFiles(CLUSTER_DIR_FILE_PATH).count > 0)))  {
+        this.performKMeansClustering(sparkContext)
+    } else {
+      println("Cluster Already Performed!")
+    }
 
     this.loadDataPerformAnalysis(sparkContext)
-
     spark.stop()
   }
 }
