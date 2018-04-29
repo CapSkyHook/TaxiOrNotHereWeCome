@@ -42,10 +42,12 @@ object TaxiProject {
     val y_t_rdd = sc.textFile(YELLOW_TAXI_DATA_PATH)
     val g_t_rdd = sc.textFile(GREEN_TAXI_DATA_PATH)
     val uber_rdd = sc.textFile(UBER_DATA_DATA_PATH)
+    val citibike_rdd = sc.textFile(CITIBIKE_DATA_PATH)
 
     val y_t_header = y_t_rdd.first()
     val g_t_header = g_t_rdd.first()
     val uber_header = uber_rdd.first()
+    val citibike_header = citibike_rdd.map(_.trim.replace("\"","")).first()
 
     val y_t_rdd1 = y_t_rdd.filter { line =>
       if (line.toLowerCase != y_t_header.toLowerCase) {
@@ -57,6 +59,15 @@ object TaxiProject {
     }
     val g_t_rdd1 = g_t_rdd.filter(line => line != g_t_header)
     val uber_rdd1 = uber_rdd.filter(line => line != uber_header)
+    
+    val citibike_rdd1 = citibike_rdd.map(_.trim.replace("\"","")).filter(line => line != citibike_header)
+    val citibike_header2 = citibike_rdd1.filter(l => l.split(",")(0)== "Trip Duration")
+    val HEADER = citibike_header2.first()
+    val citibike_rdd2 = citibike_rdd1.filter(l => l != HEADER)
+    val citibike_rdd3 = citibike_rdd2.filter(l => l.split(",").length == 15)
+    val citibike_split = citibike_rdd3.map(line => line.split(",")).map(line => (line(0).toInt, line(1), line(2), line(3).toInt, line(4), line(5).toDouble, line(6).toDouble, line(7).toInt, line(8), line(9).toDouble, line(10).toDouble, line(11).toInt, line(12), line(13), line(14).toInt))
+
+    
 
     val y_t_columns = y_t_header.split(",").toSeq
     val g_t_columns = g_t_header.split(",").toSeq
@@ -76,9 +87,11 @@ object TaxiProject {
     val g_t_start_locs = g_t_rdd_split.map(l => Vectors.dense(l._7, l._6)).cache()
     val g_t_end_locs = g_t_rdd_split.map(l => Vectors.dense(l._9, l._8)).cache()
     val uber_locs = uber_rdd_split_long_lat_converted.map(l => Vectors.dense(l._2,l._3)).cache()
+    val citibike_start_locs = citibike_split.map(l => Vectors.dense(l._6,l._7)).cache()
+    val citibike_end_locs = citibike_split.map(l => Vectors.dense(l._10),l._11)).cache()
 
 
-    val loc = y_t_start_locs.union(y_t_end_locs).union(g_t_start_locs).union(g_t_end_locs).union(uber_locs).cache()
+    val loc = y_t_start_locs.union(y_t_end_locs).union(g_t_start_locs).union(g_t_end_locs).union(uber_locs).union(citibike_start_locs).union(citibike_end_locs).cache()
 
     val all_loc_in_NYC = loc.filter(x => (x(0) < MAX_LATITUDE && x(0) > MIN_LATITUDE) && (x(1) < MAX_LONGITUDE && x(1) > MIN_LONGITUDE)).cache()
 
