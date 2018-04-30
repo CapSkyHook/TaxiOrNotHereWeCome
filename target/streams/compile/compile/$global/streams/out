@@ -1,6 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:131:3: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Unit[0m
-[0m[[0m[31merror[0m] [0m[0m required: org.apache.spark.rdd.RDD[Array[String]][0m
-[0m[[0m[31merror[0m] [0m[0m  }[0m
-[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:210:7: ')' expected but 'val' found.[0m
+[0m[[0m[31merror[0m] [0m[0m      val trainLines = coordToTrain.getOrElse(closestCoord, Array())[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -15,17 +15,6 @@ import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
 // import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
 // import org.apache.spark.mllib.linalg.Vectors
 
-// object TaxiProject {
-//   def main(args: Array[String]) {
-//     val logFile = "YOUR_SPARK_HOME/README.md" // Should be some file on your system
-//     val spark = SparkSession.builder.appName("Simple Application").getOrCreate()
-//     val logData = spark.read.textFile(logFile).cache()
-//     val numAs = logData.filter(line => line.contains("a")).count()
-//     val numBs = logData.filter(line => line.contains("b")).count()
-//     println(s"Lines with a: $numAs, Lines with b: $numBs")
-//     spark.stop()
-//   }
-// }
 
 object TaxiProject {
 
@@ -42,6 +31,7 @@ object TaxiProject {
   val PRESERVED_START_END_PTS_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/start_end_data/"
   val INPUT_TRAIN_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv"
   val TRAIN_OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/processed"
+  val CLUSTER_DENOTATIONS_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/clusterDenotations"
 
   def preprocessDataAndSaveToDataframe(sc: org.apache.spark.SparkContext): Unit = {
     val y_t_rdd = sc.textFile(YELLOW_TAXI_DATA_PATH)
@@ -93,7 +83,7 @@ object TaxiProject {
     val g_t_end_locs = g_t_rdd_split.map(l => Vectors.dense(l._9, l._8)).cache()
     val uber_locs = uber_rdd_split_long_lat_converted.map(l => Vectors.dense(l._2,l._3)).cache()
     val citibike_start_locs = citibike_split.map(l => Vectors.dense(l._6,l._7)).cache()
-    val citibike_end_locs = citibike_split.map(l => Vectors.dense(l._10),l._11)).cache()
+    val citibike_end_locs = citibike_split.map(l => Vectors.dense(l._10,l._11)).cache()
 
 
     val loc = y_t_start_locs.union(y_t_end_locs).union(g_t_start_locs).union(g_t_end_locs).union(uber_locs).union(citibike_start_locs).union(citibike_end_locs).cache()
@@ -193,10 +183,74 @@ object TaxiProject {
 
     }
 
-    val distCalc = new DistanceCalculatorImpl() // .calculateDistanceInKilometer(Location(10, 20), Location(40, 20))
+    if (trainToCoord.isEmpty || coordToTrain.isEmpty) {
+        print("HOLY SHITTTT HOUSTIN WE HAVE  FCUKINNNG PROBLEMMMMMM-------------------------------")
+    }
+    // val distCalc = new DistanceCalculatorImpl().calculateDistanceInKilometer(Location(10, 20), Location(40, 20))
 
-    // startStopData.filter()
+    val startStopByLoc = startStopData.map{ line => 
+      val lineSplit = line.split(",")
 
+      (Location(lineSplit(0).toDouble, lineSplit(1).toDouble), Location(lineSplit(2).toDouble, lineSplit(3).toDouble))
+    }
+
+    var clusterToTrainLine: scala.collection.mutable.Map[Location, String] = scala.collection.mutable.Map()
+
+    for (cluster <- clusters) {
+      var closestCoord: Location = Location(0.0, 0.0)
+      val distCalc = new DistanceCalculatorImpl()
+      var closestDist: Double = distCalc.calculateDistanceInKilometer(cluster, closestCoord)
+      for (coord <- coordToTrain.keys) {
+          if (distCalc.calculateDistanceInKilometer(coord, cluster) < closestDist) {
+            closestCoord = coord
+            closestDist = distCalc.calculateDistanceInKilometer(coord, cluster)
+          }
+      }
+      print("--------------CLOSEST COORD: " + closestCoord.lat.toString + " " + closestCoord.lon.toString)
+      val trainLines = coordToTrain.getOrElse(closestCoord, Array())
+
+      val closeStartPoints = startStopByLoc.filter(locs => new DistanceCalculatorImpl().calculateDistanceInKilometer(locs._1, cluster) < 0.5).take(50)
+      val closeEndPoints = startStopByLoc.filter(locs => new DistanceCalculatorImpl().calculateDistanceInKilometer(locs._2, cluster) < 0.5).take(50)
+
+      var pointToTrainLine: scala.collection.mutable.Map[(Location, Location), String] = scala.collection.mutable.Map()
+      var pointShortestDistance: scala.collection.mutable.Map[(Location, Location), Double] = scala.collection.mutable.Map()
+
+      for (trainLine <- trainLines) {
+        for (coord <- trainToCoord(trainLine)) {
+            for (point <- closeStartPoints) {
+                val distance = new DistanceCalculatorImpl().calculateDistanceInKilometer(point._2, coord)
+                if (distance < pointShortestDistance.getOrElse(point, 9999.9)) {
+                    pointToTrainLine += (point -> trainLine)
+                    pointShortestDistance += (point -> distance)
+                }
+            }
+            
+            for (point <- closeEndPoints) {
+                val distance = new DistanceCalculatorImpl().calculateDistanceInKilometer(point._1, coord)
+                if (distance < pointShortestDistance.getOrElse(point, 9999.9)) {
+                    pointToTrainLine += (point -> trainLine)
+                    pointShortestDistance += (point -> distance)
+                }
+            }
+        }
+      }
+
+      var lineUseCount: scala.collection.mutable.Map[String, Int] = scala.collection.mutable.Map()
+      var mostUsedTrainLine = "FOOOOOOO"
+      for (point <- pointToTrainLine.keys) {
+            val currTestedTrainLine = pointToTrainLine(point)
+            lineUseCount(currTestedTrainLine) = lineUseCount.getOrElse(currTestedTrainLine, 0) + 1
+
+            if (lineUseCount.getOrElse(currTestedTrainLine, 0) > lineUseCount.getOrElse(mostUsedTrainLine, 0)) {
+                mostUsedTrainLine = currTestedTrainLine
+            }
+      }
+
+      clusterToTrainLine(cluster) = mostUsedTrainLine
+
+    }
+    println("------------------------------------Denotation Made!------------------------------------")
+    sc.parallelize(clusterToTrainLine.toSeq).saveAsTextFile(CLUSTER_DENOTATIONS_FILE_PATH)
 
   }
 
@@ -219,6 +273,12 @@ object TaxiProject {
         this.preprocessDataMaintainStartStop(sparkContext)
     } else {
       println("------------------------------------Start Stop Data Already Created!------------------------------------")
+    }
+
+    if (!(this.testDirExist(CLUSTER_DENOTATIONS_FILE_PATH, spark) && (sparkContext.wholeTextFiles(CLUSTER_DENOTATIONS_FILE_PATH).count > 0)))  {
+        this.findCorrespondingTrainStation(sparkContext)
+    } else {
+      println("------------------------------------Clusters Already Found Train Lines!------------------------------------")
     }
 
     spark.stop()
