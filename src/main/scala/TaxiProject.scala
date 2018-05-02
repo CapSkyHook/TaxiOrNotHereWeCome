@@ -77,16 +77,16 @@ object TaxiProject {
 
 
     // Make dense vectors. Order is Latitude then Longitude
-    val y_t_start_locs = y_t_rdd_split.map(l => Vectors.dense(l._7, l._6)).cache()
-    val y_t_end_locs = y_t_rdd_split.map(l => Vectors.dense(l._11, l._10)).cache()
-    val g_t_start_locs = g_t_rdd_split.map(l => Vectors.dense(l._7, l._6)).cache()
-    val g_t_end_locs = g_t_rdd_split.map(l => Vectors.dense(l._9, l._8)).cache()
-    val uber_locs = uber_rdd_split_long_lat_converted.map(l => Vectors.dense(l._2,l._3)).cache()
-    val citibike_start_locs = citibike_split.map(l => Vectors.dense(l._6,l._7)).cache()
-    val citibike_end_locs = citibike_split.map(l => Vectors.dense(l._10,l._11)).cache()
+    val y_t_start_locs = y_t_rdd_split.map(l => Vectors.dense(l._7, l._6))
+    val y_t_end_locs = y_t_rdd_split.map(l => Vectors.dense(l._11, l._10))
+    val g_t_start_locs = g_t_rdd_split.map(l => Vectors.dense(l._7, l._6))
+    val g_t_end_locs = g_t_rdd_split.map(l => Vectors.dense(l._9, l._8))
+    val uber_locs = uber_rdd_split_long_lat_converted.map(l => Vectors.dense(l._2,l._3))
+    val citibike_start_locs = citibike_split.map(l => Vectors.dense(l._6,l._7))
+    val citibike_end_locs = citibike_split.map(l => Vectors.dense(l._10,l._11))
 
 
-    val loc = y_t_start_locs.union(y_t_end_locs).union(g_t_start_locs).union(g_t_end_locs).union(uber_locs).union(citibike_start_locs).union(citibike_end_locs).cache()
+    val loc = y_t_start_locs.union(y_t_end_locs).union(g_t_start_locs).union(g_t_end_locs).union(uber_locs).union(citibike_start_locs).union(citibike_end_locs)
 
     val all_loc_in_NYC = loc.filter(x => (x(0) < MAX_LATITUDE && x(0) > MIN_LATITUDE) && (x(1) < MAX_LONGITUDE && x(1) > MIN_LONGITUDE))
 
@@ -140,11 +140,11 @@ object TaxiProject {
   }
 
   def performKMeansClustering(sc: org.apache.spark.SparkContext): Unit = {
-    val loc_in_NYC = sc.textFile(OUTPUT_DIR_FILE_PATH).cache()
+    val loc_in_NYC = sc.textFile(OUTPUT_DIR_FILE_PATH)
     val dense_loc_in_nyc = loc_in_NYC.map { line => 
       val splitLine = line.drop(1).dropRight(1).split(",")
       Vectors.dense(splitLine(0).toDouble, splitLine(1).toDouble)
-    }.cache()
+    }
     val clusters = KMeans.train(dense_loc_in_nyc, 25, 10)
     val centroids = clusters.clusterCenters
     sc.parallelize(centroids).saveAsTextFile(CLUSTER_DIR_FILE_PATH)
