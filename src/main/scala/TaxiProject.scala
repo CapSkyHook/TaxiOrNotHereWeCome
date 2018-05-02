@@ -26,8 +26,8 @@ object TaxiProject {
   val GREEN_TAXI_DATA_PATH = "hdfs:///user/tra290/BDAD/finalProject/green-taxi-data/*.csv"
   val UBER_DATA_DATA_PATH = "hdfs:///user/tra290/BDAD/finalProject/uber-data/*.csv"
   val CITIBIKE_DATA_PATH = "hdfs:///user/tra290/BDAD/Citibike_data/*"
-  val OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/to_clustering_tmp/"
-  val CLUSTER_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/Clusters_tmp"
+  val OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/to_clustering/"
+  val CLUSTER_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/Clusters"
   val PRESERVED_START_END_PTS_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/start_end_data/"
   val INPUT_TRAIN_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv"
   val TRAIN_OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/processed"
@@ -160,18 +160,20 @@ object TaxiProject {
     var trainToCoord: scala.collection.mutable.Map[String, Array[Location]] = scala.collection.mutable.Map()
     var coordToTrain: scala.collection.mutable.Map[Location, Array[String]] = scala.collection.mutable.Map()
 
-    subwayStationsData.foreach { line =>
+    subwayStationsData.collect().foreach { line =>
       val data = line.drop(1).dropRight(1).split(",")
 
       val coords = data(0).split("=").map(_.toDouble)
       val location = Location(coords(0), coords(1))
       val trains = data(1).split("=")
-
+      
       for (train <- trains) {
           if (trainToCoord.contains(train)) {
               trainToCoord(train) = trainToCoord(train) ++ Array(location)
+              // println(trainToCoord.toSeq)
           } else {
             trainToCoord += (train -> Array(location))
+            // println(trainToCoord.toSeq)
           }
       }
 
@@ -183,9 +185,6 @@ object TaxiProject {
 
     }
 
-    if (trainToCoord.isEmpty || coordToTrain.isEmpty) {
-        print("HOLY SHITTTT HOUSTIN WE HAVE  FCUKINNNG PROBLEMMMMMM-------------------------------")
-    }
     // val distCalc = new DistanceCalculatorImpl().calculateDistanceInKilometer(Location(10, 20), Location(40, 20))
 
     val startStopByLoc = startStopData.map{ line => 
@@ -196,7 +195,7 @@ object TaxiProject {
 
     var clusterToTrainLine: scala.collection.mutable.Map[Location, String] = scala.collection.mutable.Map()
 
-    for (cluster <- clusters) {
+    for (cluster <- clusters.collect()) {
       var closestCoord: Location = Location(0.0, 0.0)
       val distCalc = new DistanceCalculatorImpl()
       var closestDist: Double = distCalc.calculateDistanceInKilometer(cluster, closestCoord)
@@ -249,7 +248,7 @@ object TaxiProject {
       clusterToTrainLine(cluster) = mostUsedTrainLine
 
     }
-    println("------------------------------------Denotation Made!------------------------------------")
+    println("------------------------------------Denotations Made!------------------------------------")
     sc.parallelize(clusterToTrainLine.toSeq).saveAsTextFile(CLUSTER_DENOTATIONS_FILE_PATH)
 
   }
