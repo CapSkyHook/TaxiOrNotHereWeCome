@@ -89,7 +89,7 @@ object TaxiProject {
     val loc = y_t_start_locs.union(y_t_end_locs).union(g_t_start_locs).union(g_t_end_locs).union(uber_locs).union(citibike_start_locs).union(citibike_end_locs)
 
     val all_loc_in_NYC = loc.filter(x => (x(0) < MAX_LATITUDE && x(0) > MIN_LATITUDE) && (x(1) < MAX_LONGITUDE && x(1) > MIN_LONGITUDE))
-
+      println("------------------------------------Common Location Train Data Processing Finished!------------------------------------")
     all_loc_in_NYC.saveAsTextFile(OUTPUT_DIR_FILE_PATH)
   }
 
@@ -104,7 +104,6 @@ object TaxiProject {
       if (line.toLowerCase != y_t_header.toLowerCase) {
         line.toLowerCase != y_t_header.toLowerCase
       } else {
-        println(line)
         line.toLowerCase != y_t_header.toLowerCase
       }
     }
@@ -128,7 +127,7 @@ object TaxiProject {
   
 
     val all_loc_in_NYC_csved = all_loc_in_NYC.map(locs => locs.flatten.mkString(","))
-    
+    println("------------------------------------Start Stop Location Data Processing Finished!------------------------------------")
     all_loc_in_NYC_csved.saveAsTextFile(PRESERVED_START_END_PTS_DIR_FILE_PATH)
 
   }
@@ -144,8 +143,9 @@ object TaxiProject {
     val dense_loc_in_nyc = loc_in_NYC.map { line => 
       val splitLine = line.drop(1).dropRight(1).split(",")
       Vectors.dense(splitLine(0).toDouble, splitLine(1).toDouble)
-    }
+    }.cache()
     val clusters = KMeans.train(dense_loc_in_nyc, 25, 10)
+    println("------------------------------------Clustering Finished!------------------------------------")
     val centroids = clusters.clusterCenters
     sc.parallelize(centroids).saveAsTextFile(CLUSTER_DIR_FILE_PATH)
   }
@@ -205,7 +205,6 @@ object TaxiProject {
             closestDist = distCalc.calculateDistanceInKilometer(coord, cluster)
           }
       }
-      print("--------------CLOSEST COORD: " + closestCoord.lat.toString + " " + closestCoord.lon.toString)
       val trainLines = coordToTrain.getOrElse(closestCoord, Array())
 
       val closeStartPoints = startStopByLoc.filter(locs => new DistanceCalculatorImpl().calculateDistanceInKilometer(locs._1, cluster) < 0.5).take(50)
@@ -263,17 +262,17 @@ object TaxiProject {
     } else {
       println("------------------------------------Data Already Created!------------------------------------")
     }
-    if (!(this.testDirExist(CLUSTER_DIR_FILE_PATH, spark) && (sparkContext.wholeTextFiles(CLUSTER_DIR_FILE_PATH).count > 0)))  {
-        this.performKMeansClustering(sparkContext)
-    } else {
-      println("------------------------------------Cluster Already Performed!------------------------------------")
-    }
     if (!(this.testDirExist(PRESERVED_START_END_PTS_DIR_FILE_PATH, spark) && (sparkContext.wholeTextFiles(PRESERVED_START_END_PTS_DIR_FILE_PATH).count > 0)))  {
         this.preprocessDataMaintainStartStop(sparkContext)
     } else {
       println("------------------------------------Start Stop Data Already Created!------------------------------------")
     }
 
+    if (!(this.testDirExist(CLUSTER_DIR_FILE_PATH, spark) && (sparkContext.wholeTextFiles(CLUSTER_DIR_FILE_PATH).count > 0)))  {
+        this.performKMeansClustering(sparkContext)
+    } else {
+      println("------------------------------------Cluster Already Performed!------------------------------------")
+    }
     if (!(this.testDirExist(CLUSTER_DENOTATIONS_FILE_PATH, spark) && (sparkContext.wholeTextFiles(CLUSTER_DENOTATIONS_FILE_PATH).count > 0)))  {
         this.findCorrespondingTrainStation(sparkContext)
     } else {
