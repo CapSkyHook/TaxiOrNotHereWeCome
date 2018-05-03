@@ -17,6 +17,8 @@ visualization - holds the files for creating the visualization of the final proc
 
 data_downloads - holds the fields related to downloading the raw data from online sources
 
+class_files - holds the compiled class files for Location.class, DistanceCalculator.class, DistanceCalculatorImpl.class and TaxiProject.class
+
 application_screenshots - holds images of the running application as well the final outputted visualizations which include a heatmap of the travel coordinates over New York City and a few images of the newly determined Kmeans based subway locations in relation to existing subway stops. Due the nature of the application and us running it on a compute node, we have shown the Spark UI in stages of the clustering algorithm as well as the intermidate running state and final output of the visualization code.
 
 taxi-project_2.11-1.0.jar - jar file version of the application.
