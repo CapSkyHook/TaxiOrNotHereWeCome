@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 #the data is copied to the local machine
 #plot heatmap
-os.chdir("../../to_visualization")
+os.chdir("../to_visualization")
 
 print("Creating HTML file for heatmap ...")
 df = pd.DataFrame()
