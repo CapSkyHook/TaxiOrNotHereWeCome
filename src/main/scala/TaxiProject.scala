@@ -141,7 +141,7 @@ object TaxiProject {
       Vectors.dense(splitLine(0).toDouble, splitLine(1).toDouble)
     }
     dense_loc_in_nyc.persist()
-    val clusters = KMeans.train(dense_loc_in_nyc, 25, 10)
+    val clusters = KMeans.train(dense_loc_in_nyc, 20, 10)
     println("------------------------------------Clustering Finished!------------------------------------")
     val centroids = clusters.clusterCenters
     sc.parallelize(centroids).saveAsTextFile(CLUSTER_DIR_FILE_PATH)
