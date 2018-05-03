@@ -42,9 +42,16 @@ Output Location For KMeans Clustering Determined Locations: CLUSTER_DIR_FILE_PAT
 Output Location For New Station Denotations: CLUSTER_DENOTATIONS_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/clusterDenotations"
 
 
-How To Run The Application:
-Requirements: Using Spark 2.1.0 for the use of SparkSession. Also need SBT installed.
-1) In the root directory, run the command "sbt package" to create a JAR version of the project 
-2) Load a version of Spark of at least 2.1.0 
-3) Submit the spark job using the following command "spark-submit taxi-project_2.11-1.0.jar"
+How To Run:
+
+1: Run The Application first:
+    Requirements: Using Spark 2.1.0 for the use of SparkSession. Also need SBT installed.
+    1) In the root directory, run the command "sbt package" to create a JAR version of the project 
+    2) Load a version of Spark of at least 2.1.0 
+    3) Submit the spark job using the following command "spark-submit taxi-project_2.11-1.0.jar"
+
+2: Copy the output data from HDFS in directories: to_visualization, clusterCenters, station_data/processed, clusterDenotations into the root directory in to_visualization, cluster_centers, station_data, clusterDenotations respectively. Now install gmplot using -> pip install gmplot.
+
+3: Run the visualization script: Go to the visualization directory and visualize.py, this will generate HTML files in the root directory for the heatmap and the cluster centers and station lines respectively.
+
 
