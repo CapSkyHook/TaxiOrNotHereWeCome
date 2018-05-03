@@ -33,7 +33,7 @@ object TaxiProject {
   val TRAIN_OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/processed"
   val CLUSTER_DENOTATIONS_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/clusterDenotations"
 
-  def preprocessDataAndSaveToDataframe(sc: org.apache.spark.SparkContext): Unit = {
+  def createCombinedLocationData(sc: org.apache.spark.SparkContext): Unit = {
     val y_t_rdd = sc.textFile(YELLOW_TAXI_DATA_PATH)
     val g_t_rdd = sc.textFile(GREEN_TAXI_DATA_PATH)
     val uber_rdd = sc.textFile(UBER_DATA_DATA_PATH)
@@ -93,7 +93,8 @@ object TaxiProject {
     all_loc_in_NYC.saveAsTextFile(OUTPUT_DIR_FILE_PATH)
   }
 
-  def preprocessDataMaintainStartStop(sc: org.apache.spark.SparkContext): Unit = {
+
+  def createStartStopData(sc: org.apache.spark.SparkContext): Unit = {
     val y_t_rdd = sc.textFile(YELLOW_TAXI_DATA_PATH)
     val g_t_rdd = sc.textFile(GREEN_TAXI_DATA_PATH)
 
@@ -132,23 +133,27 @@ object TaxiProject {
 
   }
 
+
   def testDirExist(path: String, spark: org.apache.spark.sql.SparkSession): Boolean = {
     val hadoopfs: FileSystem = FileSystem.get(spark.sparkContext.hadoopConfiguration)
     val p = new Path(path)
     hadoopfs.exists(p) && hadoopfs.getFileStatus(p).isDirectory
   }
 
+
   def performKMeansClustering(sc: org.apache.spark.SparkContext): Unit = {
     val loc_in_NYC = sc.textFile(OUTPUT_DIR_FILE_PATH)
     val dense_loc_in_nyc = loc_in_NYC.map { line => 
       val splitLine = line.drop(1).dropRight(1).split(",")
       Vectors.dense(splitLine(0).toDouble, splitLine(1).toDouble)
-    }.cache()
+    }
+    dense_loc_in_nyc.persist()
     val clusters = KMeans.train(dense_loc_in_nyc, 25, 10)
     println("------------------------------------Clustering Finished!------------------------------------")
     val centroids = clusters.clusterCenters
     sc.parallelize(centroids).saveAsTextFile(CLUSTER_DIR_FILE_PATH)
   }
+
 
   def findCorrespondingTrainStation(sc: org.apache.spark.SparkContext): Unit = {
     val startStopData = sc.textFile(PRESERVED_START_END_PTS_DIR_FILE_PATH)
@@ -252,18 +257,19 @@ object TaxiProject {
 
   }
 
+
   def main(args: Array[String]) {
     val spark = SparkSession.builder.appName("Simple Application").getOrCreate()
     val sparkContext = spark.sparkContext
     import spark.implicits._
 
     if (!(this.testDirExist(OUTPUT_DIR_FILE_PATH, spark) && (sparkContext.wholeTextFiles(OUTPUT_DIR_FILE_PATH).count > 0)))  {
-        this.preprocessDataAndSaveToDataframe(sparkContext)
+        this.createCombinedLocationData(sparkContext)
     } else {
       println("------------------------------------Data Already Created!------------------------------------")
     }
     if (!(this.testDirExist(PRESERVED_START_END_PTS_DIR_FILE_PATH, spark) && (sparkContext.wholeTextFiles(PRESERVED_START_END_PTS_DIR_FILE_PATH).count > 0)))  {
-        this.preprocessDataMaintainStartStop(sparkContext)
+        this.createStartStopData(sparkContext)
     } else {
       println("------------------------------------Start Stop Data Already Created!------------------------------------")
     }

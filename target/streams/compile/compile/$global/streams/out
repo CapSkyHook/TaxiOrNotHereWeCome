@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:210:7: ')' expected but 'val' found.[0m
-[0m[[0m[31merror[0m] [0m[0m      val trainLines = coordToTrain.getOrElse(closestCoord, Array())[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/Gautam/Documents/NYU_SPRING_18/BDAD/finalProject/src/main/scala/TaxiProject.scala:147:30: not found: value StorageLevel[0m
+[0m[[0m[31merror[0m] [0m[0m    dense_loc_in_nyc.persist(StorageLevel.MEMORY_AND_DISK)[0m
+[0m[[0m[31merror[0m] [0m[0m                             ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
