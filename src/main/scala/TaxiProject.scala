@@ -8,13 +8,6 @@ import org.apache.hadoop.fs.Path
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
-// import src.main.scala.DistanceCalculator.{Location, DistanceCalculator}
-
-// import org.apache.spark.SparkContext
-// import org.apache.spark.SparkContext._ 
-// import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
-// import org.apache.spark.mllib.linalg.Vectors
-
 
 object TaxiProject {
 
@@ -27,7 +20,7 @@ object TaxiProject {
   val UBER_DATA_DATA_PATH = "hdfs:///user/tra290/BDAD/finalProject/uber-data/*.csv"
   val CITIBIKE_DATA_PATH = "hdfs:///user/tra290/BDAD/Citibike_data/*"
   val OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/to_clustering/"
-  val CLUSTER_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/Clusters"
+  val CLUSTER_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/clusterCenters"
   val PRESERVED_START_END_PTS_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/start_end_data/"
   val INPUT_TRAIN_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv"
   val TRAIN_OUTPUT_DIR_FILE_PATH = "hdfs:///user/tra290/BDAD/finalProject/station_data/processed"
