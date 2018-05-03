@@ -14,12 +14,6 @@ val stationRDD2 = stationRDD1.map { line =>
       Array((splitLine(3) + "=" + splitLine(4))) ++ splitLine.slice(5, 16)
     }
 
-// val stationRDDsdfs = stationRDD1.map { line =>
-//       val splitLine = line.split(",")
-//       splitLine.slice(5, 16)
-//     }
-
-
 val stationRDD3 = stationRDD2.keyBy(line => line(0))
 
 val stationRDD4 = stationRDD3.groupByKey()
@@ -37,8 +31,3 @@ val stationToTrainLineStringed = stationToTrainLine.mapValues { value =>
 }
 
 stationToTrainLineStringed.saveAsTextFile(OUTPUT_DIR_FILE_PATH)
-
-
-
-
-// stationRDD1.take(1)(0).split(",").slice(5, 16)
